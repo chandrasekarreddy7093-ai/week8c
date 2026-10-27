@@ -1,0 +1,94 @@
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class TipCalculator extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        Label title = new Label("Tip Calculator");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+
+        Label billLabel = new Label("Bill Amount (Rs.):");
+        TextField billField = new TextField();
+        billField.setPromptText("Enter bill amount");
+
+        Label tipLabel = new Label("Tip Percentage:");
+        ComboBox<Integer> tipBox = new ComboBox<>();
+        tipBox.getItems().addAll(5, 10, 15, 20, 25);
+        tipBox.setValue(15);
+
+        Label tipAmountLabel = new Label("Tip Amount: Rs. 0.00");
+        Label totalLabel = new Label("Total Bill: Rs. 0.00");
+
+        Button calculateButton = new Button("Calculate Tip");
+        Button clearButton = new Button("Clear");
+
+        Label messageLabel = new Label();
+
+        calculateButton.setOnAction(e -> {
+            try {
+                double bill = Double.parseDouble(billField.getText());
+                int percentage = tipBox.getValue();
+
+                if (bill < 0) {
+                    messageLabel.setText("Enter a valid bill amount.");
+                    return;
+                }
+
+                double tip = bill * percentage / 100.0;
+                double total = bill + tip;
+
+                tipAmountLabel.setText(
+                    String.format("Tip Amount: Rs. %.2f", tip));
+                totalLabel.setText(
+                    String.format("Total Bill: Rs. %.2f", total));
+                messageLabel.setText("Calculation successful!");
+
+            } catch (NumberFormatException ex) {
+                messageLabel.setText("Please enter a valid bill amount.");
+            }
+        });
+
+        clearButton.setOnAction(e -> {
+            billField.clear();
+            tipBox.setValue(15);
+            tipAmountLabel.setText("Tip Amount: Rs. 0.00");
+            totalLabel.setText("Total Bill: Rs. 0.00");
+            messageLabel.setText("");
+        });
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(15);
+        grid.setAlignment(Pos.CENTER);
+
+        grid.add(billLabel, 0, 0);
+        grid.add(billField, 1, 0);
+        grid.add(tipLabel, 0, 1);
+        grid.add(tipBox, 1, 1);
+        grid.add(calculateButton, 0, 2);
+        grid.add(clearButton, 1, 2);
+
+        VBox root = new VBox(20, title, grid,
+                tipAmountLabel, totalLabel, messageLabel);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root, 420, 350);
+
+        stage.setTitle("Tip Calculator");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
